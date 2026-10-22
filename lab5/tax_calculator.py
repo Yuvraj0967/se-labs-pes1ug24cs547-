@@ -5,7 +5,8 @@ The slabs are configured for teaching purposes only and are not tax advice.
 
 import os
 import re
-from wsgiref.handlers import CGIHandler  # nosec B412 - HTTP_PROXY stripped
+# httpoxy: HTTP_PROXY is removed in run_as_cgi(), so B412 is suppressed here.
+from wsgiref.handlers import CGIHandler  # nosec B412
 from defusedxml import ElementTree
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -150,7 +151,7 @@ def run_as_cgi(app):
     """Serve the WSGI ``app`` through CGI."""
     # httpoxy mitigation: CGI turns a client "Proxy:" header into HTTP_PROXY.
     os.environ.pop("HTTP_PROXY", None)
-    CGIHandler().run(app)
+    CGIHandler().run(app)  # nosec B412
 
 
 def main():
