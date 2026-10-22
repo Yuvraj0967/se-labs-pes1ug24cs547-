@@ -1,0 +1,50 @@
+tax_calculator.py:2:8: F401 [*] `os` imported but unused
+tax_calculator.py:3:8: F401 [*] `sys` imported but unused
+tax_calculator.py:4:8: F401 [*] `json` imported but unused
+tax_calculator.py:18:5: N802 Function name `slabRate` should be lowercase
+tax_calculator.py:18:5: PLR0911 Too many return statements (7 > 6)
+tax_calculator.py:19:18: PLR2004 Magic value used in comparison, consider replacing `400000` with a constant variable
+tax_calculator.py:21:20: PLR2004 Magic value used in comparison, consider replacing `800000` with a constant variable
+tax_calculator.py:23:20: PLR2004 Magic value used in comparison, consider replacing `1200000` with a constant variable
+tax_calculator.py:25:20: PLR2004 Magic value used in comparison, consider replacing `1600000` with a constant variable
+tax_calculator.py:27:20: PLR2004 Magic value used in comparison, consider replacing `2000000` with a constant variable
+tax_calculator.py:29:20: PLR2004 Magic value used in comparison, consider replacing `2400000` with a constant variable
+tax_calculator.py:34:5: N802 Function name `newRegimeTax` should be lowercase
+tax_calculator.py:36:5: F841 Local variable `bracket` is assigned to but never used
+tax_calculator.py:36:32: E702 Multiple statements on one line (semicolon)
+tax_calculator.py:36:34: F841 Local variable `checked` is assigned to but never used
+tax_calculator.py:37:5: N806 Variable `taxAmount` in function should be lowercase
+tax_calculator.py:38:5: N806 Variable `cessAmount` in function should be lowercase
+tax_calculator.py:40:9: N806 Variable `taxAmount` in function should be lowercase
+tax_calculator.py:43:5: N802 Function name `basicExemption` should be lowercase
+tax_calculator.py:44:15: PLR2004 Magic value used in comparison, consider replacing `60` with a constant variable
+tax_calculator.py:44:28: PLR2004 Magic value used in comparison, consider replacing `80` with a constant variable
+tax_calculator.py:46:14: PLR2004 Magic value used in comparison, consider replacing `80` with a constant variable
+tax_calculator.py:50:5: N802 Function name `oldRegimeTax` should be lowercase
+tax_calculator.py:52:9: SIM118 Use `key in dict` instead of `key in dict.keys()`
+tax_calculator.py:54:5: N806 Variable `totalTax` in function should be lowercase
+tax_calculator.py:55:5: N806 Variable `lowerLimit` in function should be lowercase
+tax_calculator.py:58:13: N806 Variable `totalTax` in function should be lowercase
+tax_calculator.py:59:9: N806 Variable `lowerLimit` in function should be lowercase
+tax_calculator.py:63:5: N802 Function name `betterRegime` should be lowercase
+tax_calculator.py:64:5: N806 Variable `newTax` in function should be lowercase
+tax_calculator.py:65:5: N806 Variable `oldTax` in function should be lowercase
+tax_calculator.py:70:5: N802 Function name `isValidPan` should be lowercase
+tax_calculator.py:73:5: E722 Do not use bare `except`
+tax_calculator.py:76:5: N802 Function name `encryptPan` should be lowercase
+tax_calculator.py:77:49: S305 Use of insecure block cipher mode, replace with a known secure mode such as CBC or CTR
+tax_calculator.py:79:5: N806 Variable `cipherText` in function should be lowercase
+tax_calculator.py:82:5: N802 Function name `signingKey` should be lowercase
+tax_calculator.py:83:69: S505 RSA key sizes below 2048 bits are considered breakable
+tax_calculator.py:85:5: N802 Function name `parseForm16` should be lowercase
+tax_calculator.py:86:11: S318 Using `xml` to parse untrusted data is known to be vulnerable to XML attacks; use `defusedxml` equivalents
+tax_calculator.py:87:5: N806 Variable `salaryText` in function should be lowercase
+tax_calculator.py:88:5: N806 Variable `tdsText` in function should be lowercase
+tax_calculator.py:91:5: N802 Function name `runAsCgi` should be lowercase
+tax_calculator.py:99:11: UP031 Use format specifiers instead of percent format
+tax_calculator.py:100:11: UP031 Use format specifiers instead of percent format
+tax_calculator.py:102:89: E501 Line too long (104 > 88)
+tax_calculator.py:103:89: E501 Line too long (96 > 88)
+tax_calculator.py:104:11: UP031 Use format specifiers instead of percent format
+Found 48 errors.
+[*] 3 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).
