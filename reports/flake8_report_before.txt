@@ -1,0 +1,23 @@
+tax_calculator.py:2:1: F401 'os' imported but unused
+tax_calculator.py:3:1: F401 'sys' imported but unused
+tax_calculator.py:4:1: F401 'json' imported but unused
+tax_calculator.py:16:80: E501 line too long (82 > 79 characters)
+tax_calculator.py:18:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:34:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:36:5: F841 local variable 'bracket' is assigned to but never used
+tax_calculator.py:36:32: E702 multiple statements on one line (semicolon)
+tax_calculator.py:36:34: F841 local variable 'checked' is assigned to but never used
+tax_calculator.py:43:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:50:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:63:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:70:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:73:5: E722 do not use bare 'except'
+tax_calculator.py:76:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:82:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:85:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:91:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:94:1: E302 expected 2 blank lines, found 1
+tax_calculator.py:98:80: E501 line too long (81 > 79 characters)
+tax_calculator.py:102:80: E501 line too long (104 > 79 characters)
+tax_calculator.py:103:80: E501 line too long (96 > 79 characters)
+tax_calculator.py:106:1: E305 expected 2 blank lines after class or function definition, found 1
