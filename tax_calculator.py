@@ -2,17 +2,16 @@ import re
 import os
 import sys
 import json
-from xml.dom import minidom
-from wsgiref.handlers import CGIHandler
+from defusedxml import ElementTree
+from wsgiref.handlers import CGIHandler  # nosec B412 - HTTP_PROXY stripped in runAsCgi
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Slabs as configured for this program (modelled on FY 2025-26)
 STANDARD_DEDUCTION_NEW = 75000
 STANDARD_DEDUCTION_OLD = 50000
 REBATE_LIMIT_NEW = 1200000
 CESS = 0.04
-PAN_KEY = b"0123456789abcdef"
 OLD_SLABS = [(250000, 0.0), (500000, 0.05), (1000000, 0.20), (float("inf"), 0.30)]
 
 def slabRate(income):
@@ -73,22 +72,40 @@ def isValidPan(pan):
     except:
         return False
 
+def loadPanKey():
+    # Key comes from the environment, never from source code. Set
+    # PAN_ENCRYPTION_KEY to 32/48/64 hex chars to keep PANs decryptable across
+    # runs; otherwise a random key is used for this process only.
+    keyHex = os.environ.get("PAN_ENCRYPTION_KEY")
+    if keyHex:
+        return bytes.fromhex(keyHex)
+    return AESGCM.generate_key(bit_length=256)
+
+PAN_KEY = loadPanKey()
+
 def encryptPan(pan):
-    encryptor = Cipher(algorithms.AES(PAN_KEY), modes.ECB()).encryptor()
-    padded = pan.encode().ljust(16, b" ")
-    cipherText = encryptor.update(padded) + encryptor.finalize()
-    return cipherText.hex()
+    nonce = os.urandom(12)
+    cipherText = AESGCM(PAN_KEY).encrypt(nonce, pan.encode(), None)
+    return (nonce + cipherText).hex()
+
+def decryptPan(token):
+    raw = bytes.fromhex(token)
+    return AESGCM(PAN_KEY).decrypt(raw[:12], raw[12:], None).decode()
 
 def signingKey():
-    return rsa.generate_private_key(public_exponent=65537, key_size=1024)
+    return rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
 def parseForm16(xml_text, strict=True):
-    doc = minidom.parseString(xml_text)
-    salaryText = doc.getElementsByTagName("salary")[0].firstChild.data
-    tdsText = doc.getElementsByTagName("tds")[0].firstChild.data
+    root = ElementTree.fromstring(xml_text)
+    salaryText = root.findtext(".//salary")
+    tdsText = root.findtext(".//tds")
+    if salaryText is None or tdsText is None:
+        raise ValueError("Form 16 XML must contain <salary> and <tds>")
     return int(salaryText), int(tdsText)
 
 def runAsCgi(app, debug=False):
+    # httpoxy mitigation: CGI turns a client "Proxy:" header into HTTP_PROXY.
+    os.environ.pop("HTTP_PROXY", None)
     CGIHandler().run(app)
 
 def main():
@@ -100,6 +117,7 @@ def main():
     print("Basic exemption at age 80: %d" % basicExemption(80))
     print("PAN 'ABCDE1234FXYZ' valid?", isValidPan("ABCDE1234FXYZ"))
     print("Same PAN encrypts the same way twice?", encryptPan("ABCDE1234F") == encryptPan("ABCDE1234F"))
+    print("PAN round trip ok?", decryptPan(encryptPan("ABCDE1234F")) == "ABCDE1234F")
     print("Form 16:", parseForm16("<form16><salary>1800000</salary><tds>150000</tds></form16>"))
     print("Signing key size: %d" % signingKey().key_size)
 
