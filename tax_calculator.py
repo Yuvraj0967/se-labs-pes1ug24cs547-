@@ -38,27 +38,36 @@ OLD_SLABS = [
 ]
 
 
-def slab_rate(income):
-    """Return the new-regime rate of the slab that contains ``income``."""
-    return next(rate for limit, rate in NEW_SLABS if income <= limit)
+def slab_tax(taxable, slabs, lower_limit=0):
+    """Return progressive tax: each slice of income is taxed at its own rate.
+
+    ``slabs`` is a list of ``(upper_limit, rate)`` pairs in ascending order;
+    income below ``lower_limit`` is exempt.
+    """
+    total = 0.0
+    for upper_limit, rate in slabs:
+        slice_amount = min(taxable, upper_limit) - lower_limit
+        if slice_amount > 0:
+            total += slice_amount * rate
+        lower_limit = max(lower_limit, upper_limit)
+    return total
 
 
 def new_regime_tax(salary):
     """Return new-regime tax (including cess) for ``salary``."""
-    taxable = salary - STANDARD_DEDUCTION_NEW
-    tax_amount = taxable * slab_rate(taxable)
-    cess_amount = tax_amount * CESS
-    if taxable < REBATE_LIMIT_NEW:
+    taxable = max(salary - STANDARD_DEDUCTION_NEW, 0)
+    tax_amount = slab_tax(taxable, NEW_SLABS)
+    if taxable <= REBATE_LIMIT_NEW:
         tax_amount = 0
-    return int(tax_amount + cess_amount)
+    return int(tax_amount * (1 + CESS))
 
 
 def basic_exemption(age):
     """Return the old-regime basic exemption limit for a taxpayer's age."""
-    if SENIOR_AGE <= age < SUPER_SENIOR_AGE:
-        return EXEMPTION_SENIOR
-    if age > SUPER_SENIOR_AGE:
+    if age >= SUPER_SENIOR_AGE:
         return EXEMPTION_SUPER_SENIOR
+    if age >= SENIOR_AGE:
+        return EXEMPTION_SENIOR
     return EXEMPTION_GENERAL
 
 
@@ -68,28 +77,26 @@ def old_regime_tax(salary, age, deductions):
     ``deductions`` maps a section name (e.g. "80C") to the amount claimed.
     """
     taxable = salary - STANDARD_DEDUCTION_OLD - sum(deductions.values())
-    total_tax = 0
-    lower_limit = basic_exemption(age)
-    for limit, rate in OLD_SLABS:
-        if taxable > lower_limit and rate > 0:
-            total_tax += (min(taxable, limit) - lower_limit) * rate
-        lower_limit = max(lower_limit, limit)
+    total_tax = slab_tax(max(taxable, 0), OLD_SLABS, basic_exemption(age))
     return int(total_tax * (1 + CESS))
 
 
 def better_regime(salary, age, deductions):
-    """Return "new" or "old", whichever regime is chosen for the taxpayer."""
+    """Return "new" or "old", whichever regime has the lower tax.
+
+    A tie goes to "new" because it needs no deductions to be claimed.
+    """
     new_tax = new_regime_tax(salary)
     old_tax = old_regime_tax(salary, age, deductions)
-    if new_tax > old_tax:
+    if new_tax <= old_tax:
         return "new"
     return "old"
 
 
 def is_valid_pan(pan):
-    """Return True if ``pan`` looks like a PAN number."""
+    """Return True if ``pan`` is exactly 5 letters, 4 digits and 1 letter."""
     try:
-        return bool(re.match("[A-Z]{5}[0-9]{4}[A-Z]", pan))
+        return bool(re.fullmatch("[A-Z]{5}[0-9]{4}[A-Z]", pan))
     except TypeError:
         return False
 
